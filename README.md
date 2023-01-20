@@ -26,7 +26,7 @@ To wrok, the software expects a specific CSV format of 8 columns, described as f
 * 7th columun : nonActive [type:AAAA-MM-JJ] (date of "mise en disponibilité" of the scholar)
 * 8th columun : reinstatement [type:AAAA-MM-JJ] (date of coming back from "mise en disponibilité")
 
-Please note that all the fields can be optionnal: the software will try to produce consistent output. For example, it will skip scholars who do not have both an idHal and an ORCiD.
+Please note that all the fields can be optionnal: the software will try to produce consistent output. For example, it will skip scholars who do not have either an idHal and an ORCiD.
 
 Example with all the fields filled for one scholar:
 ```
