@@ -35,3 +35,12 @@ lebis,alexis,alexislebis,0000-0003-2104-8671,2019-09-01,2021-06-15,2020-01-01,20
 ```
 
 Adding more scholars can be made by making a new line to the csv.
+
+## Output
+The CCB will try to produce a consistant logical proposition from what you give it.
+
+The result produced from the above example :
+```
+((authIdHal_s:(alexislebis) OR authORCIDIdExt_s:(0000000321048671)) AND (producedDate_tdate:[2019-09-01T00:00:00Z TO 2021-06-15T00:00:00Z} AND NOT producedDate_tdate:{2020-01-01T00:00:00Z TO 2020-04-01T00:00:00Z]))
+```
+
