@@ -53,7 +53,7 @@ with open(parsed_args.csvPath, newline='') as csvfile:
             ORCiD = ORCiD.replace("-","")
 
         #Building logical prop :
-        ## (scholar_id AND isWorkingForInstitution)
+        ## (scholar_id OR isWorkingForInstitution)
         ### scholar_id = idHAL OR ORCiD
         ### isWorkingForInstitution <->  (arrive >= datePubli AND datePubli < depart) AND ( datePubli <= dispo1 OR datePubli >= retourDispo1)
         autID = idHAL
