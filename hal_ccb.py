@@ -19,6 +19,7 @@ def create_arg_parser():
     parser.add_argument('-v', '--verbose', help="Increase output verbosity by displaying HAL criteria produced.", action="store_true")
     parser.add_argument('-s','--startRetrieve', type=str, help="The start date in format AAAA-MM-DD to fetch in the HAL API, included.")
     parser.add_argument('-e','--endRetrieve', type=str, help="The end date in format AAAA-MM-DD to fetch in the HAL API, included.")
+    parser.add_argument('-d','--domains', help="Indicate wether or not the primary domains should be printed at the end of the summary.", action="store_true")
     return parser
 
 if __name__ == "__main__":
@@ -164,24 +165,76 @@ with open(parsed_args.csvPath, newline='') as csvfile:
         doc_types[i["str"][0]]=i["str"][1]
         doc_contents[i["str"][0]]=[]
     
+    ## Retrieving each domain type
+    # domain_types = {}
+    # url = "https://api.archives-ouvertes.fr/ref/domain"
+    # page = urllib.request.urlopen(url)
+    # html_bytes = page.read()
+    # html = html_bytes.decode("utf-8")
+    # data = json.loads(html)
+    # for i in data['response']['docs']:
+    #     accro,dom_lab = i["label_s"].split("=")
+    #     accro = accro[:-1]
+    #     dom_lab = dom_lab[1:]
+    #     domain_types[accro]=dom_lab
+    # print(domain_types)
+
     ## Retrieving json for all the scholars with GET query personnalized
     url = "https://api.archives-ouvertes.fr/search/"
-    values = {"q":critHAL, "wt":"json", "fl":"docType_s,primaryDomain_S,citationFull_s,docid,uri_s,authIdHal_s"}
+    values = {"q":critHAL, "wt":"json", "fl":"docType_s,primaryDomain_s,citationFull_s,docid,uri_s,authIdHal_s"}
     data = urllib.parse.urlencode(values)
     url = '?'.join([url,data])
-    print(url)
+    if(parsed_args.verbose):
+        print(url)
     page = urllib.request.urlopen(url)
     html_bytes = page.read()
     html = html_bytes.decode("utf-8")
-    print(html)
+    if(parsed_args.verbose):
+        print(html)
+    data = json.loads(html)
 
     ## Sorting each doc according to their types
     key = "docType_s"
     arr_val_id = "citationFull_s"
-    data = json.loads(html)
     for i in data["response"]["docs"]:
         content = i[arr_val_id]
         doc_contents[i[key]].append(content)
+
+    ## Counting each primary domain iff args.domains is true
+    if(parsed_args.domains):
+        key = "primaryDomain_s"
+        domains = {}
+        for i in data["response"]["docs"]:
+            if i[key] in domains:
+                domains[i[key]] += 1
+            else:
+                domains[i[key]] = 1
+
+        ### Retrieving each domain encountered (the API does not give use ALL the domain, so we have to proced this way : first identify all id domain (cf above), then query the api)
+        domain_types = {}
+        domain_query = "("
+
+        for key,val in domains.items():
+            domain_query += "code_s:"+key+" OR "
+        domain_query = domain_query[:-4]+")"
+
+        domain_url = "https://api.archives-ouvertes.fr/ref/domain"
+        domain_get = {"q":domain_query}
+        data_domain = urllib.parse.urlencode(domain_get)
+        domain_url = "?".join([domain_url,data_domain])
+        #if(parsed_args.verbose):
+        print(domain_url)
+        page = urllib.request.urlopen(domain_url)
+        html_bytes = page.read()
+        html = html_bytes.decode("utf-8")
+        if(parsed_args.verbose):
+            print(html)
+        data = json.loads(html)
+        for i in data['response']['docs']:
+            accro,dom_lab = i["label_s"].split("=")
+            accro = accro[:-1]
+            dom_lab = dom_lab[1:]
+            domain_types[accro]=dom_lab.split("/")[-1]#could remove .split("/")[-1] in order to retrieve the entire path of the domain, not ontly the leaf of the domain tree
 
     # Exporting results
     ## Exporting HAL criteria used in the query
@@ -204,9 +257,16 @@ with open(parsed_args.csvPath, newline='') as csvfile:
     f = open(path, "w")
     resolHAL = ""
     for type,content in doc_contents.items():
-        resolHAL += "\n#" + doc_types[type] + "\n"
+        resolHAL += "\n# " + doc_types[type] + "\n"
+        counter = 1
         for i in content:
-            resolHAL += "* " + (urllib.parse.unquote(i) +"\n").replace("&#x27E8;","⟨").replace("&#x27E9;","⟩")
+            resolHAL += str(counter)+ ". " + (urllib.parse.unquote(i) +"\n").replace("&#x27E8;","⟨").replace("&#x27E9;","⟩")
+            counter += 1
+    
+    if(parsed_args.domains):
+        resolHAL += "\n\n=== Représentativité des domaines\n"
+        for key,val in domains.items():
+            resolHAL += "* " + domain_types[key] + " : " + str(val) +"\n"
     f.write(resolHAL)
     f.close
     print("HAL export to:"+ path)
