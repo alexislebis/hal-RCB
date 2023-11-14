@@ -127,7 +127,7 @@ with open(parsed_args.csvPath, newline='') as csvfile:
                 drd1 = "NOT "+ PREFIX_SUBMISSION + "{" + d1 + "T00:00:00Z TO *]"
         else:
             if(rd1):
-                print("The .csv file contains strange information regarding the 'dispo' of "+row['prenom'] + row['nom']+". Please, check and fix. For now, skipping this constraint.")
+                print("The .csv file contains strange information regarding the 'dispo' of "+row['prenom'] +" "+ row['nom']+". Please, check and fix. For now, skipping this constraint.")
                 d1 = ""
                 rd1 = ""
                 drd1 = ""
@@ -155,7 +155,6 @@ with open(parsed_args.csvPath, newline='') as csvfile:
     ## Retrieving each document type
     doc_types = {}
     doc_contents = {}
-    print(type(doc_types))
     url = "https://api.archives-ouvertes.fr/ref/doctype"
     page = urllib.request.urlopen(url)
     html_bytes = page.read()
@@ -181,7 +180,8 @@ with open(parsed_args.csvPath, newline='') as csvfile:
 
     ## Retrieving json for all the scholars with GET query personnalized
     url = "https://api.archives-ouvertes.fr/search/"
-    values = {"q":critHAL, "wt":"json", "fl":"docType_s,primaryDomain_s,citationFull_s,docid,uri_s,authIdHal_s"}
+    way_naming_entry = "label_s" #can be "label_s" "citationFull_s"
+    values = {"q":critHAL, "wt":"json", "fl":"docType_s,primaryDomain_s,docid,uri_s,authIdHal_s,"+way_naming_entry}
     data = urllib.parse.urlencode(values)
     url = '?'.join([url,data])
     if(parsed_args.verbose):
@@ -195,7 +195,7 @@ with open(parsed_args.csvPath, newline='') as csvfile:
 
     ## Sorting each doc according to their types
     key = "docType_s"
-    arr_val_id = "citationFull_s"
+    arr_val_id = way_naming_entry
     for i in data["response"]["docs"]:
         content = i[arr_val_id]
         doc_contents[i[key]].append(content)
@@ -222,8 +222,8 @@ with open(parsed_args.csvPath, newline='') as csvfile:
         domain_get = {"q":domain_query}
         data_domain = urllib.parse.urlencode(domain_get)
         domain_url = "?".join([domain_url,data_domain])
-        #if(parsed_args.verbose):
-        print(domain_url)
+        if(parsed_args.verbose):
+            print(domain_url)
         page = urllib.request.urlopen(domain_url)
         html_bytes = page.read()
         html = html_bytes.decode("utf-8")
@@ -270,5 +270,7 @@ with open(parsed_args.csvPath, newline='') as csvfile:
     f.write(resolHAL)
     f.close
     print("HAL export to:"+ path)
+    if(parsed_args.domains):
+        print("Domains summary has been added to the end of the report (word of caution: the list is not ordered)")
 
 
