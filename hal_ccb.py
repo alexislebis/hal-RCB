@@ -13,11 +13,14 @@ def create_arg_parser():
     parser.add_argument('--output',
                     help='Path and name of the file to where the criteria should be saved. Use default hal_criteria if missing')
     parser.add_argument('-v', '--verbose', help="Increase output verbosity by displaying HAL criteria produced.", action="store_true")
+    parser.add_argument('-s','--startRetrieve', type=str, help="The start date in format AAAA-MM-DD to fetch in the HAL API, included.")
+    parser.add_argument('-e','--endRetrieve', type=str, help="The end date in format AAAA-MM-DD to fetch in the HAL API, included.")
     return parser
 
 if __name__ == "__main__":
     arg_parser = create_arg_parser()
     parsed_args = arg_parser.parse_args(sys.argv[1:])
+
 
 PREFIX_IDHAL        = "authIdHal_s:"
 PREFIX_ORCID        = "authORCIDIdExt_s:"
@@ -74,6 +77,17 @@ with open(parsed_args.csvPath, newline='') as csvfile:
         if(not(row["scholarDeparture"] == "")):
             depart = row["scholarDeparture"] +"T00:00:00Z"+ "}" #excluding last element
         
+        ##Exploiting -s and -e to adjust arrive and depart
+        if(parsed_args.startRetrieve):
+            print("startretrieve ok")
+        else:
+            print("non startretrieve")
+        
+        if(parsed_args.endRetrieve):
+            print("startretrieve ok")
+        else:
+            print("non startretrieve")
+
         if(arrive):
             if(depart):
                 ad = PREFIX_SUBMISSION + arrive + " TO " + depart
