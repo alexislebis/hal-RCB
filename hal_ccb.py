@@ -149,16 +149,6 @@ with open(parsed_args.csvPath, newline='') as csvfile:
     if(parsed_args.verbose):
         print(critHAL)
 
-    path = ""
-    if(parsed_args.output):
-        path = parsed_args.output
-    else:
-        path = "hal_criteria.txt"
-    f = open(path, "w")
-    f.write(critHAL)
-    f.close
-    print("HAL criteria saved to:"+ path)
-
     #Querying the HAL API
 
     ## Retrieving each document type
@@ -174,7 +164,7 @@ with open(parsed_args.csvPath, newline='') as csvfile:
         doc_types[i["str"][0]]=i["str"][1]
         doc_contents[i["str"][0]]=[]
     
-    ## Retrieving json for all the scholar with GET query personnalized
+    ## Retrieving json for all the scholars with GET query personnalized
     url = "https://api.archives-ouvertes.fr/search/"
     values = {"q":critHAL, "wt":"json", "fl":"docType_s,primaryDomain_S,citationFull_s,docid,uri_s,authIdHal_s"}
     data = urllib.parse.urlencode(values)
@@ -193,7 +183,19 @@ with open(parsed_args.csvPath, newline='') as csvfile:
         content = i[arr_val_id]
         doc_contents[i[key]].append(content)
 
-    ## printing results in plaintext
+    # Exporting results
+    ## Exporting HAL criteria used in the query
+    path = ""
+    if(parsed_args.output):
+        path = parsed_args.output
+    else:
+        path = "hal_criteria.txt"
+    f = open(path, "w")
+    f.write(critHAL)
+    f.close
+    print("HAL criteria saved to:"+ path)
+
+    ## Exporting the query resolved in plaintext in a simple format (could be improve with various formats such as md rt etc...)
     path = ""
     if(parsed_args.output):
         path = parsed_args.output.split(".")[0]+"_resolved.txt"
