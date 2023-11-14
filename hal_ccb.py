@@ -1,6 +1,7 @@
 ### author : alexis lebis
 
 import argparse
+from datetime import date
 import csv
 import sys
 
@@ -77,16 +78,27 @@ with open(parsed_args.csvPath, newline='') as csvfile:
         if(not(row["scholarDeparture"] == "")):
             depart = row["scholarDeparture"] +"T00:00:00Z"+ "}" #excluding last element
         
-        ##Exploiting -s and -e to adjust arrive and depart
+        ##Exploiting -s and -e to adjust arrive and depart -- at the end here, the arrive date is correctly set
         if(parsed_args.startRetrieve):
-            print("startretrieve ok")
-        else:
-            print("non startretrieve")
-        
+            if(arrive == ""):
+                arrive = "["+parsed_args.startRetrieve+"T00:00:00Z"
+            else:
+                dateS = date.fromisoformat(parsed_args.startRetrieve)
+                dateA = date.fromisoformat(arrive.replace("[","").replace("T00:00:00Z",""))
+                if(dateS > dateA): #date arrive precedes date s, so arrive have to be replaced by s requested by user invoking the script
+                    arrive = "["+parsed_args.startRetrieve+"T00:00:00Z"
+                #else, nothing to do bc dateS precedes the date of the scholar so we can't retrieve its works previous to his/her enrollemnt in the institutions
+
+        ##Exploiting -s and -e to adjust arrive and depart -- at the end here, the arrive date is correctly set
         if(parsed_args.endRetrieve):
-            print("startretrieve ok")
-        else:
-            print("non startretrieve")
+            if(depart == ""):
+                depart = parsed_args.endRetrieve+"T00:00:00Z"+"}"
+            else:
+                dateS = date.fromisoformat(parsed_args.endRetrieve)
+                dateD = date.fromisoformat(depart.replace("}","").replace("T00:00:00Z",""))
+                if(dateD > dateS): #date s precedes date depart, so depart have to be replaced by s requested by user invoking the script
+                    depart = parsed_args.endRetrieve+"T00:00:00Z"+"}"
+                #else, nothing to do bc dateS precedes the date of the scholar so we can't retrieve its works previous to his/her enrollemnt in the institutions
 
         if(arrive):
             if(depart):
