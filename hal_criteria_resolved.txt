@@ -1,0 +1,68 @@
+
+#Article dans une revue
+* Yala Nawal, Mourad Oussalah, Belkacem Fergani, Anthony Fleury. New incremental SVM algorithms for human activity recognition in smart homes. <i>Journal of Ambient Intelligence and Humanized Computing</i>, 2023, 14 (10), pp.13433-13450. <a target="_blank" href="https://dx.doi.org/10.1007/s12652-022-03798-w">⟨10.1007/s12652-022-03798-w⟩</a>. <a target="_blank" href="https://hal.science/hal-04251578">⟨hal-04251578⟩</a>
+
+#Communication dans un congrès
+* Luis Alberto Pinos Ullauri, Anthony Fleury, Wim van den Noortgate, Alexis Lebis, Mathieu Vermeulen, et al.. Modelling the effect of courses over soft skills: A simulation study. <i>2023 AERA Annual Meeting</i>, American Educational Research Association, Apr 2023, Chicago, United States. <a target="_blank" href="https://hal.science/hal-04202625">⟨hal-04202625⟩</a>
+* Alexis Lebis, Patrick Delaporte, Romain Deleau, Rémy Pinot, Mathieu Vermeulen. La pédagogie par projet agile abat ses cartes : une métaphore ludique au service de la pratique. <i>11ème Conférence Environnements Informatiques pour l’Apprentissage Humain (EIAH 2023)</i>, Jun 2023, Brest, France. <a target="_blank" href="https://hal.science/hal-04148574">⟨hal-04148574⟩</a>
+* Luis Alberto Pinos Ullauri, Alexis Lebis, Abir Karami, Mathieu Vermeulen, Anthony Fleury, et al.. Système de recommandation de cours basé sur les soft skills : Une approche utilisant les algorithmes génétiques. <i>EIAH2023 : 11ème Conférence sur les Environnements Informatiques pour l'Apprentissage Humain</i>, Association des Technologies de l’Information pour l’Education et la Formation (ATIEF), Jun 2023, Brest, France. pp.344-347. <a target="_blank" href="https://hal.science/hal-04184360">⟨hal-04184360⟩</a>
+* Gaëlle Guigon, Mathieu Muratet, Mathieu Vermeulen, Thibault Carron. Facilitate the design of Role Learning Games: the RLG Kit. <i>international conference on Advanced Learning Technologies and Technology-enhanced Learning</i>, IEEE Computer Society and the IEEE Technical Committee on Learning Technology, Jul 2023, Orem (UT), United States. <a target="_blank" href="https://hal.science/hal-04138615">⟨hal-04138615⟩</a>
+* Gaëlle Guigon, Mathieu Vermeulen, Mathieu Muratet, Thibault Carron. RLG Model et RLG kit : un modèle et un kit de conception de Role Learning Game. <i>EIAH2023 : 11ème Conférence sur les Environnements Informatiques pour l'Apprentissage Humain</i>, Jun 2023, Brest, France. pp.316-319. <a target="_blank" href="https://hal.science/hal-04138594">⟨hal-04138594⟩</a>
+
+#Poster de conférence
+
+#Proceedings/Recueil des communications
+
+#N°spécial de revue/special issue
+
+#Ouvrages
+
+#Chapitre d'ouvrage
+
+#Article de blog scientifique
+
+#Notice d’encyclopédie ou de dictionnaire
+
+#Traduction
+
+#Brevet
+
+#Autre publication scientifique
+
+#Pré-publication, Document de travail
+
+#Rapport
+
+#Thèse
+
+#HDR
+
+#Cours
+
+#Mémoire d'étudiant
+
+#Image
+
+#Vidéo
+
+#Son
+
+#Carte
+
+#Logiciel
+
+#Document associé à des manifestations scientifiques
+
+#Chapitre de rapport
+
+#Thèse d'établissement
+
+#typdoc_MEMLIC
+
+#Note de lecture
+
+#Autre rapport, séminaire, workshop
+
+#Rapport d'activité
+
+#Notes de synthèse

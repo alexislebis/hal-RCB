@@ -2,8 +2,11 @@
 
 import argparse
 from datetime import date
+import urllib.request
+import urllib.parse
 import csv
 import sys
+import json
 
 def create_arg_parser():
     # Creates and returns the ArgumentParser object
@@ -155,3 +158,55 @@ with open(parsed_args.csvPath, newline='') as csvfile:
     f.write(critHAL)
     f.close
     print("HAL criteria saved to:"+ path)
+
+    #Querying the HAL API
+
+    ## Retrieving each document type
+    doc_types = {}
+    doc_contents = {}
+    print(type(doc_types))
+    url = "https://api.archives-ouvertes.fr/ref/doctype"
+    page = urllib.request.urlopen(url)
+    html_bytes = page.read()
+    html = html_bytes.decode("utf-8")
+    data = json.loads(html)
+    for i in data['response']['result']['doc']:
+        doc_types[i["str"][0]]=i["str"][1]
+        doc_contents[i["str"][0]]=[]
+    
+    ## Retrieving json for all the scholar with GET query personnalized
+    url = "https://api.archives-ouvertes.fr/search/"
+    values = {"q":critHAL, "wt":"json", "fl":"docType_s,primaryDomain_S,citationFull_s,docid,uri_s,authIdHal_s"}
+    data = urllib.parse.urlencode(values)
+    url = '?'.join([url,data])
+    print(url)
+    page = urllib.request.urlopen(url)
+    html_bytes = page.read()
+    html = html_bytes.decode("utf-8")
+    print(html)
+
+    ## Sorting each doc according to their types
+    key = "docType_s"
+    arr_val_id = "citationFull_s"
+    data = json.loads(html)
+    for i in data["response"]["docs"]:
+        content = i[arr_val_id]
+        doc_contents[i[key]].append(content)
+
+    ## printing results in plaintext
+    path = ""
+    if(parsed_args.output):
+        path = parsed_args.output.split(".")[0]+"_resolved.txt"
+    else:
+        path = "hal_criteria_resolved.txt"
+    f = open(path, "w")
+    resolHAL = ""
+    for type,content in doc_contents.items():
+        resolHAL += "\n#" + doc_types[type] + "\n"
+        for i in content:
+            resolHAL += "* " + (urllib.parse.unquote(i) +"\n").replace("&#x27E8;","⟨").replace("&#x27E9;","⟩")
+    f.write(resolHAL)
+    f.close
+    print("HAL export to:"+ path)
+
+
