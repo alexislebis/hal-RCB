@@ -15,7 +15,7 @@ python3 /path/to/soft --help
 ```
 
 ## CSV format
-To wrok, the software expects a specific CSV format of 8 columns, described as follow :
+To work, the software expects a specific CSV format of 8 columns, described as follow :
 
 * 1st columun : lastName [type:str]
 * 2nd columun : firstName [type:str]
@@ -44,3 +44,12 @@ The result produced from the above example :
 ((authIdHal_s:(alexislebis) OR authORCIDIdExt_s:(0000000321048671)) AND (producedDate_tdate:[2019-09-01T00:00:00Z TO 2021-06-15T00:00:00Z} AND NOT producedDate_tdate:{2020-01-01T00:00:00Z TO 2020-04-01T00:00:00Z]))
 ```
 
+## Other use
+This software also produces an export of all the work of the scholars, optionnaly during a specified temporal interval. `-s` or `--startRetrieve` followed by `YYYY-MM-DD` specify the date to start looking for, and `-e` or `--endRetrieve` followed by `YYYY-MM-DD` the date to end up the search. If there is a conflict between `scholarArrival` and `-s` the date which succeed the other is used. Conversely if there is a conflict between `-e` and `scholarDeparture`, the date which preceed the other is used. This way, no work will be retrieved when a scholar leave the institution.
+
+A summary of the primary domains of all the extracted documents can also be produced using the `-d` or `--domains` optional argument.
+
+Example of use retrieving all the work of scholars indicated in the .csv in [2023-01-01,2023-12-30]
+```
+python3 hal_ccb.py ./hal.csv -s 2023-01-01 -e 2023-12-30 -d
+```
