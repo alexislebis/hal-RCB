@@ -16,7 +16,7 @@ Path of the csv file is mandatory.
 Please check the --help for more information.
 
 ```
-python3 /path/to/soft --help
+python3 /path/to/hal_rcb.py --help
 ```
 
 ## CSV format
@@ -58,16 +58,18 @@ A summary of the primary domains of all the extracted documents can also be prod
 
 Example of use in order to retrieve all the works of scholars indicated in the .csv within [2023-01-01,2023-12-30]
 ```
-python3 hal_ccb.py ./hal.csv -s 2023-01-01 -e 2023-12-30 -d
+python3 hal_rcb.py ./hal.csv -s 2023-01-01 -e 2023-12-30 -d
 ```
 
 It will produced the following `hal_criteria_resolved.txt` file :
+
 ```
 # Article dans une revue
+1. Alexis Lebis, Jérémie Humeau, Anthony Fleury, Flavien Lucas, Mathieu Vermeulen. Fully Individualized Curriculum with Decaying Knowledge, a New Hard Problem: Investigation and Recommendations. International Journal of Artificial Intelligence in Education, 2023, ⟨10.1007/s40593-023-00376-9⟩. ⟨hal-04296931⟩
 
 # Communication dans un congrès
-1. Alexis Lebis, Patrick Delaporte, Romain Deleau, Rémy Pinot, Mathieu Vermeulen. La pédagogie par projet agile abat ses cartes : une métaphore ludique au service de la pratique. 11ème Conférence Environnements Informatiques pour l’Apprentissage Humain (EIAH 2023), Jun 2023, Brest, France. ⟨hal-04148574⟩
-2. Luis Alberto Pinos Ullauri, Anthony Fleury, Wim van den Noortgate, Alexis Lebis, Mathieu Vermeulen, et al.. Modelling the effect of courses over soft skills: A simulation study. 2023 AERA Annual Meeting, American Educational Research Association, Apr 2023, Chicago, United States. ⟨hal-04202625⟩
+1. Luis Alberto Pinos Ullauri, Anthony Fleury, Wim van den Noortgate, Alexis Lebis, Mathieu Vermeulen, et al.. Modelling the effect of courses over soft skills: A simulation study. 2023 AERA Annual Meeting, American Educational Research Association, Apr 2023, Chicago, United States. ⟨hal-04202625⟩
+2. Alexis Lebis, Patrick Delaporte, Romain Deleau, Rémy Pinot, Mathieu Vermeulen. La pédagogie par projet agile abat ses cartes : une métaphore ludique au service de la pratique. 11ème Conférence Environnements Informatiques pour l’Apprentissage Humain (EIAH 2023), Jun 2023, Brest, France. ⟨hal-04148574⟩
 3. Luis Alberto Pinos Ullauri, Alexis Lebis, Abir Karami, Mathieu Vermeulen, Anthony Fleury, et al.. Système de recommandation de cours basé sur les soft skills : Une approche utilisant les algorithmes génétiques. EIAH2023 : 11ème Conférence sur les Environnements Informatiques pour l'Apprentissage Humain, Association des Technologies de l’Information pour l’Education et la Formation (ATIEF), Jun 2023, Brest, France. pp.344-347. ⟨hal-04184360⟩
 
 # Poster de conférence
@@ -111,6 +113,7 @@ It will produced the following `hal_criteria_resolved.txt` file :
 # Carte
 
 # Logiciel
+1. Alexis Lebis, Jérémie Humeau. Fully Individualized Curriculum with Decaying Knowledge Meta-Heurisitc Solver. 2023, ⟨swh:1:dir:411f53f49872171a9c3da7caeb967c17fddadcbd;origin=http://gvipers.imt-nord-europe.fr/m3tal/csdvp-evolutionary-algorithm-optimization;visit=swh:1:snp:634276c83e6780dfcdfb1dd5683f7dc970353e9e;anchor=swh:1:rev:54e03bbd717749bab8b70ba3ae5041d70f355ca3⟩. ⟨hal-04298620⟩
 
 # Document associé à des manifestations scientifiques
 
@@ -130,7 +133,6 @@ It will produced the following `hal_criteria_resolved.txt` file :
 
 
 === Représentativité des domaines
-* Environnements Informatiques pour l'Apprentissage Humain : 2
 * Education : 1
-
+* Environnements Informatiques pour l'Apprentissage Humain : 4
 ```
