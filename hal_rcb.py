@@ -21,6 +21,7 @@ def create_arg_parser():
     parser.add_argument('-e','--endRetrieve', type=str, help="The end date in format AAAA-MM-DD to fetch in the HAL API, included.")
     parser.add_argument('-d','--domains', help="Indicate wether or not the primary domains should be printed at the end of the summary.", action="store_true")
     parser.add_argument('-r','--numRows', type=int, help="The number of rows to be retrieved during the queries. Max is 10000. Default 50.", default=50)
+    parser.add_argument('-a','--autocorrectrows', help="Auto correct the number of rows to be retrieved during the queries if an error occur. Can generate two queries to the HAL documents portal. It is a quality of life argument.", action="store_true")
     return parser
 
 if __name__ == "__main__":
@@ -194,9 +195,27 @@ with open(parsed_args.csvPath, newline='') as csvfile:
         print(html)
     data = json.loads(html)
 
-    ## Checking if rows if suffisant or nor
+    ## Checking if rows if suffisant or not ; auto-correct
     if int(data["response"]["numFound"]) > parsed_args.numRows:
-        print("Warning /!\ The number of rows used ("+str(parsed_args.numRows)+") does not match the number of documents found ("+str(data["response"]["numFound"])+")! You should envisage to increase the value using the -r argument.")
+        print("Warning /!\ The number of rows used ("+str(parsed_args.numRows)+") does not match the number of documents found ("+str(data["response"]["numFound"])+")!")
+        if parsed_args.autocorrectrows:
+            print("Auto correcting the number of rows from "+str(parsed_args.numRows)+" to "+str(data["response"]["numFound"]))
+            url = "https://api.archives-ouvertes.fr/search/"
+            way_naming_entry = "label_s" #can be "label_s" "citationFull_s"
+            values = {"q":critHAL, "wt":"json", "fl":"docType_s,primaryDomain_s,docid,uri_s,authIdHal_s,"+way_naming_entry, "rows":data["response"]["numFound"]}
+            data = urllib.parse.urlencode(values)
+            url = '?'.join([url,data])
+            if(parsed_args.verbose):
+                print(url)
+            page = urllib.request.urlopen(url)
+            html_bytes = page.read()
+            html = html_bytes.decode("utf-8")
+            if(parsed_args.verbose):
+                print(html)
+            data = json.loads(html)
+        else:
+            print("You should envisage to increase the number of rows value fetched using the -r argument.")
+            exit()
 
     ## Sorting each doc according to their types
     key = "docType_s"
