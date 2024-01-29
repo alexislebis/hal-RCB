@@ -215,16 +215,16 @@ with open(parsed_args.csvPath, newline='') as csvfile:
             else:
                 domains[i[key]] = 1
 
-        ### Retrieving each domain encountered (the API does not give use ALL the domain, so we have to proced this way : first identify all id domain (cf above), then query the api)
+        ### Retrieving each domain encountered (the API does not give us ALL the domain, so we have to proced this way : first identify all id domain (cf above), then query the api)
         domain_types = {}
         domain_query = "("
-
+    
         for key,val in domains.items():
             domain_query += "code_s:"+key+" OR "
         domain_query = domain_query[:-4]+")"
 
         domain_url = "https://api.archives-ouvertes.fr/ref/domain"
-        domain_get = {"q":domain_query}
+        domain_get = {"q":domain_query,"rows":len(domains)} # using len(domain) for adapting the size of the domain query (hal api is defaulted to 30)
         data_domain = urllib.parse.urlencode(domain_get)
         domain_url = "?".join([domain_url,data_domain])
         if(parsed_args.verbose):
@@ -240,6 +240,7 @@ with open(parsed_args.csvPath, newline='') as csvfile:
             accro = accro[:-1]
             dom_lab = dom_lab[1:]
             domain_types[accro]=dom_lab.split("/")[-1]#could remove .split("/")[-1] in order to retrieve the entire path of the domain, not ontly the leaf of the domain tree
+            
 
     # Exporting results
     ## Exporting HAL criteria used in the query
@@ -270,6 +271,7 @@ with open(parsed_args.csvPath, newline='') as csvfile:
     
     if(parsed_args.domains):
         resolHAL += "\n\n=== Représentativité des domaines\n"
+        print(domains)
         for key,val in domains.items():
             resolHAL += "* " + domain_types[key] + " : " + str(val) +"\n"
     f.write(resolHAL)
