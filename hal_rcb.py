@@ -20,6 +20,7 @@ def create_arg_parser():
     parser.add_argument('-s','--startRetrieve', type=str, help="The start date in format AAAA-MM-DD to fetch in the HAL API, included.")
     parser.add_argument('-e','--endRetrieve', type=str, help="The end date in format AAAA-MM-DD to fetch in the HAL API, included.")
     parser.add_argument('-d','--domains', help="Indicate wether or not the primary domains should be printed at the end of the summary.", action="store_true")
+    parser.add_argument('-r','--numRows', type=int, help="The number of rows to be retrieved during the queries. Max is 10000. Default 50.", default=50)
     return parser
 
 if __name__ == "__main__":
@@ -181,7 +182,7 @@ with open(parsed_args.csvPath, newline='') as csvfile:
     ## Retrieving json for all the scholars with GET query personnalized
     url = "https://api.archives-ouvertes.fr/search/"
     way_naming_entry = "label_s" #can be "label_s" "citationFull_s"
-    values = {"q":critHAL, "wt":"json", "fl":"docType_s,primaryDomain_s,docid,uri_s,authIdHal_s,"+way_naming_entry}
+    values = {"q":critHAL, "wt":"json", "fl":"docType_s,primaryDomain_s,docid,uri_s,authIdHal_s,"+way_naming_entry, "rows":parsed_args.numRows}
     data = urllib.parse.urlencode(values)
     url = '?'.join([url,data])
     if(parsed_args.verbose):
@@ -192,6 +193,10 @@ with open(parsed_args.csvPath, newline='') as csvfile:
     if(parsed_args.verbose):
         print(html)
     data = json.loads(html)
+
+    ## Checking if rows if suffisant or nor
+    if int(data["response"]["numFound"]) > parsed_args.numRows:
+        print("Warning /!\ The number of rows used ("+str(parsed_args.numRows)+") does not match the number of documents found ("+str(data["response"]["numFound"])+")! You should envisage to increase the value using the -r argument.")
 
     ## Sorting each doc according to their types
     key = "docType_s"
