@@ -5,6 +5,7 @@ HAL Report and Criteria Builder
 This software take a formatted csv file and produce :
 * Specific criteria that can be used for automatic stamping for a HAL collection ;
 * An export from HAL of all the production of scholars, optionally within a time range, in a simple .txt report (planned : in various formats such as .md and .html)
+* (NEW!) Automatically build a correspondance between HAL export and SCIMAGO Journal ranking
 
 ⚠️ Despite some testings, this software is shipped as is. Please always manually check both the criteria and the export produced by the software to prevent any errors, especially when used for official reports.
 
@@ -42,7 +43,7 @@ lebis,alexis,alexislebis,0000-0003-2104-8671,2019-09-01,2021-06-15,2020-01-01,20
 Adding more scholars can be made by making a new line to the csv.
 
 ## Criteria Collection Builder (CCB)
-The HAL CCB will try to produce a consistant logical proposition from what you give it.
+The HAL CCB part will try to produce a consistant logical proposition from what you give it.
 
 The result produced from the above example :
 ```
@@ -136,3 +137,10 @@ It will produced the following `hal_criteria_resolved.txt` file :
 * Education : 1
 * Environnements Informatiques pour l'Apprentissage Humain : 4
 ```
+
+## SCIMAGO Journal AutoRankig
+If the correct option is set (-j), the script will try to match the HAL entry to the corresponding SCIMAGO Journal Yearly ranking (downloadable at [scimago](https://www.scimagojr.com/journalrank.php?year=2025)).
+You have to manually retrieve each year and store it into a single folder (the -f option allows you to specify where the folder is located on your machine). Each file should have the name "scimagojr YEAR.csv".
+The script produce a .csv file with the matching.
+
+This is an *exact match*, no fuzzy match or regexp is performed.
