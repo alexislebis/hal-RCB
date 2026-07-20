@@ -7,6 +7,9 @@ import urllib.parse
 import csv
 import sys
 import json
+import os
+import re
+import pandas as pd
 
 def create_arg_parser():
     # Creates and returns the ArgumentParser object
@@ -22,6 +25,8 @@ def create_arg_parser():
     parser.add_argument('-d','--domains', help="Indicate wether or not the primary domains should be printed at the end of the summary.", action="store_true")
     parser.add_argument('-r','--numRows', type=int, help="The number of rows to be retrieved during the queries. Max is 10000. Default 50.", default=50)
     parser.add_argument('-a','--autocorrectrows', help="Auto correct the number of rows to be retrieved during the queries if an error occur. Can generate two queries to the HAL documents portal. It is a quality of life argument.", action="store_true")
+    parser.add_argument('-j','--autoscimago', help="Performs automatic check of HAL extracted articles from journals over scimago database (scimago files must be stored in a single folder and each file must by of the form 'scimagojr YEAR.csv')", action="store_true")
+    parser.add_argument('-f','--scimagofolder', help="Folder to find all the yearly scimago exports to check", default="scimago-folder")
     return parser
 
 if __name__ == "__main__":
@@ -32,6 +37,83 @@ if __name__ == "__main__":
 PREFIX_IDHAL        = "authIdHal_s:"
 PREFIX_ORCID        = "authORCIDIdExt_s:"
 PREFIX_SUBMISSION   = "producedDate_tdate:" #ISO 8601 -- should it be publicationDate_tdate ?
+
+OUTPUT_FILE = "hal_with_scimago.csv"
+
+# FOLLOWING IS IA GENERATED (for SCIMAGO Extract)
+def load_scimago(year):
+    if year in scimago_cache:
+        return scimago_cache[year]
+
+    filename = os.path.join(
+        parsed_args.scimagofolder,
+        f"scimagojr {year}.csv"
+    )
+
+    if not os.path.exists(filename):
+        print(f"Missing SCImago file for {year}")
+        scimago_cache[year] = None
+        return None
+
+    # SCImago files are usually ';' separated
+    df = pd.read_csv(filename, sep=';', encoding="utf-8")
+
+    # Normalize title column
+    if "Title" not in df.columns:
+        raise ValueError(
+            f"'Title' column not found in {filename}"
+        )
+
+    df["Title_norm"] = (
+        df["Title"]
+        .str.lower()
+        .str.strip()
+    )
+
+    scimago_cache[year] = df
+    return df
+
+
+# ---------------------------------------------------------
+# Extract year and journal
+# ---------------------------------------------------------
+
+def extract_year(text):
+    m = re.search(r"\b(19|20)\d{2}\b", text)
+    return int(m.group()) if m else None
+
+
+def extract_journal(text):
+    """
+    HAL format:
+
+    Authors. Title. Journal, 2023, ...
+    """
+
+    # Split on ". "
+    parts = re.split(r"\.\s+", text)
+
+    if len(parts) < 3:
+        return None
+
+    # Third element should normally be the journal
+    journal = parts[2]
+
+    # Remove trailing commas if any
+    journal = journal.split(",")[0].strip()
+
+    return journal
+
+def find_journal(df, journal): #EXACT MATCH
+    journal_norm = journal.strip().lower()
+
+    match = df[df["Title_norm"] == journal_norm]
+
+    if match.empty:
+        return None
+
+    return match.iloc[0]
+###########
 
 with open(parsed_args.csvPath, newline='') as csvfile:
 
@@ -298,5 +380,66 @@ with open(parsed_args.csvPath, newline='') as csvfile:
     print("HAL export to:"+ path)
     if(parsed_args.domains):
         print("Domains summary has been added to the end of the report (word of caution: the list is not ordered)")
+
+
+# SCIMAGO autolabeling
+    
+    if(parsed_args.autoscimago):
+        scimago_cache = {}
+        results = []
+
+        for pub in doc_contents["ART"]:
+
+            year = extract_year(pub)
+            journal = extract_journal(pub)
+
+            result = {
+                "Publication": pub,
+                "Year": year,
+                "Journal": journal,
+                "H index": None,
+                "Quartile": None,
+                "SJR": None,
+                "Categories": None
+            }
+
+            if year is None or journal is None:
+                results.append(result)
+                continue
+
+            df = load_scimago(year)
+
+            if df is None:
+                results.append(result)
+                continue
+
+            row = find_journal(df, journal)
+
+            if row is not None:
+
+                if "H index" in row:
+                    result["H index"] = row["H index"]
+
+                if "SJR Best Quartile" in row:
+                    result["Quartile"] = row["SJR Best Quartile"]
+
+                if "SJR" in row:
+                    result["SJR"] = row["SJR"]
+
+                if "Categories" in row:
+                    result["Categories"] = row["Categories"]
+
+            else:
+                print(f"Journal not found: {journal} ({year})")
+
+            results.append(result)
+
+        pd.DataFrame(results).to_csv(
+            OUTPUT_FILE,
+            index=False,
+            encoding="utf-8"
+        )
+
+        print("Done.")        
 
 
